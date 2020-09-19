@@ -153,7 +153,7 @@
 			//hit a block?
 			var hit = -1;
 			blocks.some(function(block,i){
-				if(vlock.x - ball.r < nx && nx < block.x + block.x + block.w + ball.r &&
+				if(block.x - ball.r < nx && nx < block.x + block.x + block.w + ball.r &&
 					block.y - ball.r < ny && ny < block.y + block.h + ball.r){
 					hit = i;
 				return true;
