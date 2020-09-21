@@ -8,6 +8,8 @@
 		"use strict";
 		var houses = [], missiles = [], shoot, timer = NaN, count = 0, score = 0, ctx;
 
+
+		//家オブジェクト
 		function House(x){
 			this.x = x;
 			this.y = 550;
@@ -15,15 +17,16 @@
 			this.hit = false;
 		}
 
+		//ミサイル(相手の攻撃)オブジェクト
 		function Missle(){
-			this.maxCount = 500;
-			this.interval = 1000;
+			this.maxCount = 500;	//ミサイルが落ちてきてからg地上に墜落するまでにかかる時間
+			this.interval = 1000;	//一度ミサイルが墜落したあとにどれぐらいの間隔でミサイルが落ちるのかを決める
 
 			this.reload = function(){
-				this.sX = rand(800);
-				this.eX = rand(800);
+				this.sX = rand(800);//落下開始時のx座標
+				this.eX = rand(800);//地上でのx座標
 				this.interval = this.interval * 0.9;
-				this.firetime = rand(this.interval) + count;
+				this.firetime = rand(this.interval) + count;//今の時間+intervalに爆発する設定
 				this.x = 0;
 				this.y = 0;
 				this.r = 0;
@@ -61,6 +64,7 @@
 				ctx.drawImage(this.image,
 					this.scopeX - this.scopeW / 2, this.scopeY - this.scopeW / 2);
 
+				//発射中でなければメソッドから抜ける
 				if(!this.fire) return;
 
 				if(this.shotR == 0 && this.count < 100){
@@ -174,6 +178,7 @@
 
 						//家に衝突したか判定
 						houses.forEach(function(house){
+							//外れている判定をしてそれ以外だったらあたっている
 							if((house.x + house.w < m.x - 50) || 
 								(m.x + 50 < house.x)){
 							}else{
