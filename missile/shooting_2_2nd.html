@@ -3,13 +3,11 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Document</title>
+	<title>Missiles</title>
 	<script>
 		"use strict";
 		var houses = [], missiles = [], shoot, timer = NaN, count = 0, score = 0, ctx;
 
-
-		//家オブジェクト
 		function House(x){
 			this.x = x;
 			this.y = 550;
@@ -17,16 +15,16 @@
 			this.hit = false;
 		}
 
-		//ミサイル(相手の攻撃)オブジェクト
-		function Missle(){
-			this.maxCount = 500;	//ミサイルが落ちてきてからg地上に墜落するまでにかかる時間
-			this.interval = 1000;	//一度ミサイルが墜落したあとにどれぐらいの間隔でミサイルが落ちるのかを決める
+		function Missile(){
+			this.maxCount = 500;
+			this.interval = 1000;
 
+			//初期化するときに呼ぶ関数
 			this.reload = function(){
-				this.sX = rand(800);//落下開始時のx座標
-				this.eX = rand(800);//地上でのx座標
+				this.sX = rand(800);
+				this.eX = rand(800);
 				this.interval = this.interval * 0.9;
-				this.firetime = rand(this.interval) + count;//今の時間+intervalに爆発する設定
+				this.firetime = rand(this.interval) + count;
 				this.x = 0;
 				this.y = 0;
 				this.r = 0;
@@ -44,6 +42,7 @@
 				}
 			};
 
+			//コンストラクタが呼ばれたときにはreloadする
 			this.reload();
 		}
 
@@ -64,7 +63,6 @@
 				ctx.drawImage(this.image,
 					this.scopeX - this.scopeW / 2, this.scopeY - this.scopeW / 2);
 
-				//発射中でなければメソッドから抜ける
 				if(!this.fire) return;
 
 				if(this.shotR == 0 && this.count < 100){
@@ -99,10 +97,11 @@
 			ctx.stroke();
 		}
 
-		function circle(ctx,x,y,r){
-			if(r <= 0)return;
+		function circle(ctx, x, y, r){
+			//一行で書くこのやり方
+			if(r <= 0) return;
 			ctx.beginPath();
-			ctx.arc(x,y,r,0,Math.PI*2,true);
+			ctx.arc(x, y, r, 0, Math.PI * 2, true);
 			ctx.fill();
 		}
 
@@ -110,7 +109,7 @@
 			shoot = new Shoot();
 			var canvas = document.getElementById('canvas');
 			ctx = canvas.getContext('2d');
-			ctx.font = "20pt Arial";
+			ctx.font = "20px Arial";
 
 			canvas.addEventListener('mousemove', mousemove);
 			canvas.addEventListener('mousedown', mousedown);
@@ -121,22 +120,27 @@
 		function start(){
 			score = 0;
 
+			//こいつはグローバル変数を書き換えている
 			houses = [];
 			for(var i = 0;i < 13;i++){
-				houses.push(new House(i*60 + 20));
+				houses.push(new House(i * 60 + 20));
 			}
 
+			//こいつはグローバル変数を書き換えている
 			missiles = [];
 			for(var i = 0;i < 8;i++){
-				missiles.push(new Missle());
+				missiles.push(new Missile());
 			}
+
 			timer = setInterval(mainLoop, 20);
+
 		}
 
 		function mainLoop(){
 			count++;
 
 			//自分のミサイル発射時、その状態を更新
+			//shoot,fireは発射されたかどうかを判定する変数
 			if(shoot.fire){
 				shoot.count++;
 
@@ -155,7 +159,7 @@
 				if(c < 0){
 					return;
 				}
-				if(m.r > 0){
+				if(m.r>0){
 					if(m.r++ > 100){
 						m.reload();
 					}
@@ -165,8 +169,8 @@
 					m.y = 600 * c / m.maxCount;
 
 					//自分の迎撃ミサイルとの衝突判定
-					var dx = Math.pow(shoot.shotX - m.x, 2);
-					var dy = Math.pow(shoot.shotY - m.y, 2);
+					var dx = Math.pow(shoot.shotX - m.x,2);
+					var dy = Math.pow(shoot.shotY - m.y,2);
 					if((dx + dy) < Math.pow(shoot.shotR,2)){
 						m.r = 1;
 						score += 100;
@@ -174,20 +178,21 @@
 						return;
 					}
 
+					//地面に衝突時
 					if(c > m.maxCount){
 
 						//家に衝突したか判定
 						houses.forEach(function(house){
-							//外れている判定をしてそれ以外だったらあたっている
-							if((house.x + house.w < m.x - 50) || 
+							if((house.x + house.w < m.x - 50)||
 								(m.x + 50 < house.x)){
+
 							}else{
 								house.hit = true;
 							}
 						});
 
 						if(houses.every(function(house){
-							return house.hit;
+							return house.hit
 						})){
 							clearInterval(timer);
 							timer = NaN;
@@ -224,7 +229,7 @@
 
 			//家の描画
 			houses.forEach(function(h){
-				ctx.drawImage(strip, (h.hit?20:0),0,20,20,h.x,h.y,h.w,h.w);
+				ctx.drawImage(strip, (h.hit ? 20:0),0,20,20,h.x,h.y,h.w,h.w);
 			});
 
 			//自分のミサイルの描画
@@ -246,12 +251,14 @@
 			}
 		}
 	</script>
+
+
 </head>
-<body onload="init()">
+<body onload='init()'>
 	<canvas id="canvas" width="800" height="600"></canvas>
-	<img id="strip" src="imgs/missile/strip.png" style="display:none;"/>
-	<img id="scope" src="imgs/missile/scope.png" style="display:none;"/>
-	<audio id="explode" src="imgs/missile/bomb.mp3"></audio>
+	<img id="strip" src="strip.png" style="display:none;"/>
+	<img id="scope" src="scope.png" style="display:none;"/>
+	<audio id="explode" src="bomb.mp3"></audio>
 	
 </body>
 </html>
