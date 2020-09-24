@@ -13,7 +13,6 @@
 		var timer = NaN;
 		var ctx;
 
-		addEventListener('keydown', mykeydown);
 
 		//Pointオブジェクト
 		function Point(x, y){
@@ -32,6 +31,13 @@
 			ctx = canvas.getContext('2d');
 			ctx.font = "20px sans-serif";
 
+			start();
+			
+			window.onkeydown = keydown;
+			addEventListener('keydown', mykeydown);
+		}
+
+		function start(){
 			//蛇の初期化
 			snake.push(new Point(W / 2, H / 2));
 
@@ -41,8 +47,6 @@
 			}
 
 			if(isNaN(timer))timer = setInterval("tick()", 200);
-			window.onkeydown = keydown;
-
 		}
 
 		//餌の追加
