@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Mine Land</title>
+	<style>
+		td.cell{width:20px;height:20px;background-color:Gray;}
+		td.open{background-color:White;}
+	</style>
+	<script>
+		"use strict";
+		var W = 10, H = 10, BOMB = 10, cell = [], opened = 0;
+
+		function init(){
+			var main = document.getElementById("main");
+
+			//iはyのイメージ
+			//jはxのイメージ
+			for(var i = 0;i < H;i++){
+				cell[i] = [];
+				var tr = document.createElement("tr");
+				for(var j = 0;j < W;j++){
+					var td = document.createElement("td");
+					td.addEventListener("click", click);
+					td.className = "cell";
+					td.y = i;
+					td.x = j;
+					cell[i][j] = td;
+					tr.appendChild(td);
+				}
+				main.appendChild(tr);
+			}
+
+			for(var i = 0;i < BOMB;i++){
+				while(true){
+					var x = rand(W);
+					var y = rand(H);
+
+					if(!cell[y][x].bomb){
+						cell[y][x].bomb = true;
+						break;
+					}
+				}
+			}
+		}
+
+		function count(x, y){
+			var b = 0;
+			for(var i = y - 1;i <= y + 1;i++){
+				for(var j = x - 1;j <= x + 1;j++){
+					if(cell[i] && cell[i][j]){
+						if(cell[i][j].bomb)b++;
+					}
+				}
+			}
+			return b;
+		}
+
+		function open(x, y){
+			for(var i = y - 1;i <= y + 1;i++){
+				for(var j = x - 1;j <= x + 1;j++){
+					if(cell[i] && cell[i][j]){
+						var c = cell[i][j];
+						if(c.opnened || c.bomb){
+							continue;
+						}
+						flip(c);//回転させる処理
+						var n = count(j, i);
+						if(n == 0){
+							open(j, i);
+						}else{
+							c.textContent = n;
+						}
+					}
+				}
+			}
+		}
+
+		//属性を変更する関数
+		function flip(cell){
+			cell.className = "cell open";
+			cell.opnened = true;
+			if(++opened >= (W * H - BOMB)){
+				document.getELementById("title").textContent = "Good Job";
+			}
+		}
+
+		//ボムがあるかどうか判定＆なかった場合にオープンを呼び出す
+		function click(e){//オーバーライドしている？
+			var src = e.currentTarget;
+			if(src.bomb){
+				cell.forEach(function(tr){
+					tr.forEach(function(td){
+						if(td.bomb){
+							td.textContent = "+";
+						}
+					});
+				});
+				document.getElementById("title").textContent = "Game Over";
+			}else{
+				open(src.x, src.y);
+			}
+		}
+
+		function rand(r){ return Math.floor(Math.random() * r); }
+
+	</script>
+</head>
+<body onload="init()">
+	<h1 id="title">Mine Land</h1>
+	<table id="main" border="1"></table>
+</body>
+</html>
